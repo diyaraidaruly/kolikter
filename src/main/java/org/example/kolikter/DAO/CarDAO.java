@@ -82,6 +82,29 @@ public class CarDAO implements IDAO {
     }
 
     @Override
+    public List<Car> filterByBrand(String brand) {
+        List<Car> cars = new ArrayList<>();
+        String sql = "SELECT * FROM car WHERE brand = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, brand);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                cars.add(extractCarFromResultSet(rs));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return cars;
+    }
+
+
+    @Override
     public List<Car> getCarsByPriceRange(double minPrice, double maxPrice)  throws SQLException {
         String sql = "SELECT * FROM car WHERE price BETWEEN ? AND ?";
         List<Car> cars = new ArrayList<>();

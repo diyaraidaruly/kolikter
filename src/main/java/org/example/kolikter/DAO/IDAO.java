@@ -10,5 +10,6 @@ public interface IDAO {
     Car getCarByVin(int id);
     List<Car> getAllCars() throws SQLException;
     void deleteCar(int id) throws SQLException;
+    List<Car> filterByBrand(String brand) throws SQLException;
     List<Car> getCarsByPriceRange(double minPrice, double maxPrice)  throws SQLException;
 }

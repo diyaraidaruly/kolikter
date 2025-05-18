@@ -35,4 +35,9 @@ public class CarService implements IDAO {
         carDAO.deleteCar(id);
     }
 
+    @Override
+    public List<Car> filterByBrand(String brand) throws SQLException {
+        return  carDAO.filterByBrand(brand);
+    }
+
 }
