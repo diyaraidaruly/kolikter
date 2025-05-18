@@ -13,20 +13,20 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         BorderPane root = new BorderPane();
 
-        // Жоғарғы меню панелі
         HBox topMenu = new HBox(10);
         Button showCarsButton = new Button("Cars");
         topMenu.getChildren().add(showCarsButton);
         root.setTop(topMenu);
 
-        // Көлік контроллері
         CarController carController = new CarController();
 
-        // Батырма басылғанда ғана көліктер тізімін көрсет
         showCarsButton.setOnAction(e -> {
             root.setCenter(carController.getView());
+            carController.showTableAndFilter();
             carController.loadAllCars();
+            showCarsButton.setVisible(false);
         });
+
 
         Scene scene = new Scene(root, 800, 600);
         primaryStage.setTitle("Көлік тізімі");

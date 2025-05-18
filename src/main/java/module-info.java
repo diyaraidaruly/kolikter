@@ -3,6 +3,7 @@ module org.example.kolikter {
     requires javafx.fxml;
     requires java.sql;
     requires static lombok;
+    requires java.desktop;
 
     opens org.example.kolikter to javafx.fxml;
     opens org.example.kolikter.model to javafx.base; // ← МІНЕ ОСЫ ҚАЖЕТ
