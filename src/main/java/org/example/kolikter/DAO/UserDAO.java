@@ -62,9 +62,21 @@ public class UserDAO {
         user.setAge(rs.getInt("age"));
         user.setCity(rs.getString("city"));
         user.setPhone_num(rs.getString("phone_num"));
-        user.setLogin(rs.getString("login"));
+        user.setLogin(rs.getString("username"));
         user.setPassword(rs.getString("password"));
         return user;
     }
 
+    public void deleteUser(String user) {
+        String sql = "DELETE FROM users WHERE login = ?";
+        try(Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, user);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

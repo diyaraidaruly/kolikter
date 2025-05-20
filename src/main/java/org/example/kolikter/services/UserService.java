@@ -1,6 +1,9 @@
 package org.example.kolikter.services;
 
 import org.example.kolikter.DAO.UserDAO;
+import org.example.kolikter.model.User;
+
+import java.util.List;
 
 public class UserService extends UserDAO {
 
@@ -12,5 +15,14 @@ public class UserService extends UserDAO {
     @Override
     public boolean checkAdminLogin(String password) {
         return  userDAO.checkAdminLogin(password);
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return userDAO.getUsers();
+    }
+
+    public void deleteUser(String user) {
+        userDAO.deleteUser(user);
     }
 }
