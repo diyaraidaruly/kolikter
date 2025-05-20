@@ -9,11 +9,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class User {
-    String full_name;
-    int age;
-    String city;
-    String phone_num;
-    String login;
-    String password;
+    private String full_name;
+    private int age;
+    private String city;
+    private String phone_num;
+    private String login;
+    private String password;
+
+    public static boolean isAdmin = false;
 
 }

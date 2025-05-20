@@ -5,7 +5,12 @@ import org.example.kolikter.DAO.UserDAO;
 public class UserService extends UserDAO {
 
     private final UserDAO userDAO = new UserDAO();
-    public boolean checkLogin(String login, String password){
-        return userDAO.checkLogin(login, password);
+    public boolean checkUserLogin(String login, String password){
+        return userDAO.checkUserLogin(login, password);
+    }
+
+    @Override
+    public boolean checkAdminLogin(String password) {
+        return  userDAO.checkAdminLogin(password);
     }
 }

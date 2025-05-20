@@ -305,7 +305,11 @@ public class CarController {
 //                }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("");
+                alert.setHeaderText(null);
+                alert.setContentText("Error" + ex.getMessage());
+                alert.showAndWait();
             }
         });
 
@@ -319,7 +323,11 @@ public class CarController {
             carTable.getItems().setAll(cars);
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error loading cars: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Error loading cars: " + e.getMessage());
+            alert.showAndWait();
         }
     }
 
@@ -328,16 +336,28 @@ public class CarController {
             double min = Double.parseDouble(minPriceField.getText().trim());
             double max = Double.parseDouble(maxPriceField.getText().trim());
             if (min > max) {
-                JOptionPane.showMessageDialog(null, "Min price cannot be greater than max price.");
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Min price cannot be greater than max price.");
+                alert.showAndWait();
                 return;
             }
             List<Car> filteredCars = carService.getCarsByPriceRange(min, max);
             carTable.getItems().setAll(filteredCars);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Please enter valid numeric values for price.");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Please enter valid numeric values for price.");
+            alert.showAndWait();
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error filtering by price: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Error filtering by price: " + e.getMessage());
+            alert.showAndWait();
         }
     }
 
@@ -370,33 +390,71 @@ public class CarController {
 //    }
 public void showCarCardScene(Car car) {
     VBox root = new VBox(10);
-    root.setPadding(new Insets(15));
+    root.setPadding(new Insets(20));
 
-    root.getChildren().addAll(
-            new Label("VIN: " + car.getVin()),
-            new Label("Brand: " + car.getBrand()),
-            new Label("Model: " + car.getModel()),
-            new Label("Year: " + car.getYear()),
-            new Label("Color: " + car.getColor()),
-            new Label("Engine Volume: " + car.getEngineVolume() + " L"),
-            new Label("Mileage: " + car.getMileage() + " km"),
-            new Label("Transmission: " + car.getTransmission()),
-            new Label("Drive Type: " + car.getDriveType()),
-            new Label("Body Type: " + car.getBodyType()),
-            new Label("Price: " + String.format("%,.0f", car.getPrice()) + " ₸"),
-            new Label("Fuel Type: " + car.getFuelType())
-    );
+    Button buyButton = new Button("Buy");
+    Button deleteButton = new Button("Delete");
+
+    if(User.isAdmin){
+        root.getChildren().addAll(
+                new Label("VIN: " + car.getVin()),
+                new Label("Brand: " + car.getBrand()),
+                new Label("Model: " + car.getModel()),
+                new Label("Year: " + car.getYear()),
+                new Label("Color: " + car.getColor()),
+                new Label("Engine Volume: " + car.getEngineVolume() + " L"),
+                new Label("Mileage: " + car.getMileage() + " km"),
+                new Label("Transmission: " + car.getTransmission()),
+                new Label("Drive Type: " + car.getDriveType()),
+                new Label("Body Type: " + car.getBodyType()),
+                new Label("Price: " + String.format("%,.0f", car.getPrice()) + " ₸"),
+                new Label("Fuel Type: " + car.getFuelType()),
+                buyButton,deleteButton
+        );
+    }else{
+        root.getChildren().addAll(
+                new Label("VIN: " + car.getVin()),
+                new Label("Brand: " + car.getBrand()),
+                new Label("Model: " + car.getModel()),
+                new Label("Year: " + car.getYear()),
+                new Label("Color: " + car.getColor()),
+                new Label("Engine Volume: " + car.getEngineVolume() + " L"),
+                new Label("Mileage: " + car.getMileage() + " km"),
+                new Label("Transmission: " + car.getTransmission()),
+                new Label("Drive Type: " + car.getDriveType()),
+                new Label("Body Type: " + car.getBodyType()),
+                new Label("Price: " + String.format("%,.0f", car.getPrice()) + " ₸"),
+                new Label("Fuel Type: " + car.getFuelType()),
+                buyButton);
+    }
 
     Button backButton = new Button("Back");
     root.getChildren().add(backButton);
 
-    Scene scene = new Scene(root, 400, 400);
+    Scene scene = new Scene(root, 400, 450);
     Stage carStage = new Stage();
     carStage.setTitle("Car Details");
     carStage.setScene(scene);
     carStage.show();
 
-    backButton.setOnAction(e -> carStage.close());
+    backButton.setOnAction(e -> {
+        carStage.close();
+        showCarListScene();
+    });
+
+    buyButton.setOnAction(e -> {
+        try {
+            carService.buyCar(car.getVin());
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success");
+            alert.setHeaderText(null);
+            alert.setContentText("Car buyed successfully!");
+            alert.showAndWait();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    });
+
 }
 
 

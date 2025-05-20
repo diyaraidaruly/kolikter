@@ -52,7 +52,7 @@ public class CarDAO implements IDAO {
     @Override
     public List<Car> getAllCars() {
         List<Car> cars = new ArrayList<>();
-        String sql = "SELECT * FROM car WHERE Status = 'Available'";
+        String sql = "SELECT * FROM car WHERE Status = 'AVAILABLE'";
         try (Connection conn = DBConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -124,7 +124,7 @@ public class CarDAO implements IDAO {
 
     @Override
     public void buyCar(int vin) throws SQLException {
-        String sql = "UPDATE cars SET status = 'SOLD' WHERE vin = ?";
+        String sql = "UPDATE car SET status = 'SOLD' WHERE vin = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, vin);

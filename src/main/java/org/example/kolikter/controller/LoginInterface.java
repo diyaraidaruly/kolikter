@@ -8,10 +8,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import org.example.kolikter.services.UserService;
+import org.example.kolikter.model.User;
 
 public class LoginInterface {
     public Node login() {
         CarController carController = new CarController();
+        UserController userController = new UserController();
 
         Button loginBtn = new Button("Кіру");
         VBox centerBox = new VBox(loginBtn);
@@ -43,6 +45,9 @@ public class LoginInterface {
         Button showCarsButton = new Button("Cars");
         showCarsButton.setVisible(false);
 
+        Button users = new Button("Users");
+        users.setVisible(false);
+
         // Кіру батырмасын басқанда пароль енгізу өрісі мен кіру батырмасын көрсету
         loginBtn.setOnAction(e -> {
             centerBox.getChildren().clear();
@@ -58,13 +63,22 @@ public class LoginInterface {
             String password = passwordField.getText();
 
             UserService userService = new UserService();
-            if (userService.checkLogin(username, password)) {
-                // Сәтті логин
+            if (userService.checkUserLogin(username, password)) {
                 errorText.setText("");
                 passwordBox.setVisible(false);
                 centerBox.getChildren().clear();
                 showCarsButton.setVisible(true);
                 centerBox.getChildren().add(showCarsButton);
+            } else if(userService.checkAdminLogin( password)) {
+                User.isAdmin = true;
+                errorText.setText("");
+                passwordBox.setVisible(false);
+                centerBox.getChildren().clear();
+                showCarsButton.setVisible(true);
+                users.setVisible(true);
+                centerBox.getChildren().add(showCarsButton);
+                centerBox.getChildren().add(users);
+
             } else {
                 errorText.setText("Қате логин немесе пароль!");
             }
@@ -76,6 +90,10 @@ public class LoginInterface {
             carController.showTableAndFilter();
             carController.loadAllCars();
             showCarsButton.setVisible(false);
+        });
+
+        users.setOnAction(e -> {
+            centerBox.getChildren().add(userController.getView());
         });
 
         return centerBox;
