@@ -341,33 +341,64 @@ public class CarController {
         }
     }
 
-    public void showCarCardScene(Car car) {
-        VBox root = new VBox(10);
-        root.setPadding(new Insets(15));
+//    public void showCarCardScene(Car car) {
+//        VBox root = new VBox(10);
+//        root.setPadding(new Insets(15));
+//
+//        root.getChildren().addAll(
+//                new Label("VIN: " + car.getVin()),
+//                new Label("Марка: " + car.getBrand()),
+//                new Label("Модель: " + car.getModel()),
+//                new Label("Жыл: " + car.getYear()),
+//                new Label("Түсі: " + car.getColor()),
+//                new Label("Қозғалтқыш көлемі: " + car.getEngineVolume() + " л"),
+//                new Label("Жүрісі: " + car.getMileage() + " км"),
+//                new Label("Қорап: " + car.getTransmission()),
+//                new Label("Привод: " + car.getDriveType()),
+//                new Label("Кузов: " + car.getBodyType()),
+//                new Label("Бағасы: " + String.format("%,.0f ₸", car.getPrice())),
+//                new Label("Отын түрі: " + car.getFuelType())
+//        );
+//
+//        Button backButton = new Button("Артқа");
+//        backButton.setOnAction(e -> showCarListScene());
+//        root.getChildren().add(backButton);
+//
+//        Scene scene = new Scene(root, 400, 500);
+//        mainStage.setTitle(car.getBrand() + " " + car.getModel());
+//        mainStage.setScene(scene);
+//    }
+public void showCarCardScene(Car car) {
+    VBox root = new VBox(10);
+    root.setPadding(new Insets(15));
 
-        root.getChildren().addAll(
-                new Label("VIN: " + car.getVin()),
-                new Label("Марка: " + car.getBrand()),
-                new Label("Модель: " + car.getModel()),
-                new Label("Жыл: " + car.getYear()),
-                new Label("Түсі: " + car.getColor()),
-                new Label("Қозғалтқыш көлемі: " + car.getEngineVolume() + " л"),
-                new Label("Жүрісі: " + car.getMileage() + " км"),
-                new Label("Қорап: " + car.getTransmission()),
-                new Label("Привод: " + car.getDriveType()),
-                new Label("Кузов: " + car.getBodyType()),
-                new Label("Бағасы: " + String.format("%,.0f ₸", car.getPrice())),
-                new Label("Отын түрі: " + car.getFuelType())
-        );
+    root.getChildren().addAll(
+            new Label("VIN: " + car.getVin()),
+            new Label("Brand: " + car.getBrand()),
+            new Label("Model: " + car.getModel()),
+            new Label("Year: " + car.getYear()),
+            new Label("Color: " + car.getColor()),
+            new Label("Engine Volume: " + car.getEngineVolume() + " L"),
+            new Label("Mileage: " + car.getMileage() + " km"),
+            new Label("Transmission: " + car.getTransmission()),
+            new Label("Drive Type: " + car.getDriveType()),
+            new Label("Body Type: " + car.getBodyType()),
+            new Label("Price: " + String.format("%,.0f", car.getPrice()) + " ₸"),
+            new Label("Fuel Type: " + car.getFuelType())
+    );
 
-        Button backButton = new Button("Артқа");
-        backButton.setOnAction(e -> showCarListScene());
-        root.getChildren().add(backButton);
+    Button backButton = new Button("Back");
+    root.getChildren().add(backButton);
 
-        Scene scene = new Scene(root, 400, 500);
-        mainStage.setTitle(car.getBrand() + " " + car.getModel());
-        mainStage.setScene(scene);
-    }
+    Scene scene = new Scene(root, 400, 400);
+    Stage carStage = new Stage();
+    carStage.setTitle("Car Details");
+    carStage.setScene(scene);
+    carStage.show();
+
+    backButton.setOnAction(e -> carStage.close());
+}
+
 
     public void showCarListScene() {
         Scene scene = new Scene(layout, 800, 600);
