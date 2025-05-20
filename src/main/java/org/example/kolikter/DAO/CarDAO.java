@@ -122,6 +122,16 @@ public class CarDAO implements IDAO {
         return cars;
     }
 
+    @Override
+    public void buyCar(int vin) throws SQLException {
+        String sql = "UPDATE cars SET status = 'SOLD' WHERE vin = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, vin);
+            stmt.executeUpdate();
+        }
+    }
+
 
     private Car extractCarFromResultSet(ResultSet rs) throws SQLException {
         Car car = new Car();

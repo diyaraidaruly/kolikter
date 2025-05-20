@@ -1,9 +1,12 @@
 package org.example.kolikter.controller;
 
+import javafx.scene.Scene;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.*;
 import javafx.geometry.Insets;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import org.example.kolikter.model.*;
 import org.example.kolikter.services.CarService;
 
@@ -12,23 +15,26 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class CarController {
+    private Stage mainStage;
 
     private CarService carService = new CarService();
 
-    private Button filterByPriceButton = new Button("filter by Price");
+    private Button filterByPriceButton = new Button("Filter by Price");
 
     private TableView<Car> carTable = new TableView<>();
     private TextField minPriceField = new TextField();
     private TextField maxPriceField = new TextField();
     private TextField car_name = new TextField();
-    private TextField carNameToAdd = new TextField();
-    private Button filterByBrand = new Button("filter by brand");
-    private Button filterButton = new Button("filter");
-    private Button addCar = new Button("add car");
-    private Button add = new Button("add");
-    private Button prev = new Button("previus");
+    private Button filterByBrand = new Button("Filter by Brand");
+    private Button filterButton = new Button("Filter");
+    private Button addCar = new Button("Add Car");
+
     private VBox layout = new VBox(10);
 
+    public CarController(Stage stage) {
+        this.mainStage = stage;
+        setupUI();
+    }
 
     public CarController() {
         setupUI();
@@ -38,7 +44,6 @@ public class CarController {
         carTable.setVisible(true);
         filterButton.setVisible(true);
         addCar.setVisible(true);
-
     }
 
     private void setupTable() {
@@ -62,7 +67,6 @@ public class CarController {
             }
         });
 
-//        Table colums
         TableColumn<Car, Integer> yearCol = new TableColumn<>("Year");
         yearCol.setCellValueFactory(new PropertyValueFactory<>("year"));
 
@@ -87,18 +91,13 @@ public class CarController {
         TableColumn<Car, String> fuelTypeCol = new TableColumn<>("Fuel Type");
         fuelTypeCol.setCellValueFactory(new PropertyValueFactory<>("fuelType"));
 
-        TableColumn<Car, Status> statusCol = new TableColumn<>("Status");
-        statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
-
-//        getting values from db
         carTable.getColumns().addAll(
                 brandCol, modelCol, priceCol,
                 yearCol, colorCol, engineVolumeCol,
-                mileageCol, transmissionCol,driveTypeCol,
-                bodyTypeCol, fuelTypeCol,statusCol
+                mileageCol, transmissionCol, driveTypeCol,
+                bodyTypeCol, fuelTypeCol
         );
     }
-
 
     private void setupUI() {
         setupTable();
@@ -110,65 +109,78 @@ public class CarController {
         filterByBrand.setVisible(false);
         filterByPriceButton.setVisible(false);
         addCar.setVisible(false);
-        add.setVisible(false);
-        prev.setVisible(false);
 
         minPriceField.setPromptText("Min price");
         maxPriceField.setPromptText("Max price");
         car_name.setPromptText("Car name");
-        carNameToAdd.setPromptText("");
 
         filterButton.setOnAction(e -> {
-            filterByBrand.setVisible(true);
-            filterByPriceButton.setVisible(true);
-
             if (!layout.getChildren().contains(car_name)) {
                 layout.getChildren().addAll(car_name, filterByBrand, minPriceField, maxPriceField, filterByPriceButton);
             }
+            filterByBrand.setVisible(true);
+            filterByPriceButton.setVisible(true);
         });
 
         addCar.setOnAction(e -> {
-            add.setVisible(true);
-            prev.setVisible(true);
-            addCarForm();
+            showAddCarForm();
             carTable.setVisible(false);
+            filterButton.setVisible(false);
+            filterByBrand.setVisible(false);
+            filterByPriceButton.setVisible(false);
+            addCar.setVisible(false);
         });
-        //
-        add.setOnAction(e -> carTable.setVisible(true));
 
         filterByBrand.setOnAction(e -> filterByBrand());
         filterByPriceButton.setOnAction(e -> filterByPrice());
-        layout.getChildren().addAll(filterButton,addCar,carTable );
 
+        layout.getChildren().addAll(filterButton, addCar, carTable);
+
+        // Екі рет басқанда көлік карточкасын көрсету
+        carTable.setRowFactory(tv -> {
+            TableRow<Car> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                    Car rowData = row.getItem();
+                    showCarCardScene(rowData);
+                }
+            });
+            return row;
+        });
     }
-
 
     public VBox getView() {
         return layout;
     }
 
-//  filtering by brand name
     public void filterByBrand() {
-        try{
-            String br = car_name.getText();
-            if (br.equals("")) {
-                carTable.getItems().setAll(carService.getAllCars());
-            }
-            else{
+        try {
+            String br = car_name.getText().trim();
+            if (br.isEmpty()) {
+                loadAllCars();
+            } else {
                 List<Car> cars = carService.filterByBrand(br);
                 carTable.getItems().setAll(cars);
             }
-
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error filtering by brand: " + e.getMessage());
         }
     }
 
-    private void addCarForm() {
-        VBox form = new VBox(10);
-        form.setPadding(new Insets(10));
+    private void showAddCarForm() {
+        VBox formContainer = new VBox(10);
+        formContainer.setPadding(new Insets(10));
 
-//      fields for writing new car`s description
+        // Back button at the top
+        Button backButton = new Button("Back");
+        formContainer.getChildren().add(backButton);
+
+        GridPane formGrid = new GridPane();
+        formGrid.setHgap(10);
+        formGrid.setVgap(10);
+        formGrid.setPadding(new Insets(10));
+
         TextField vinField = new TextField();
         vinField.setPromptText("VIN");
 
@@ -211,76 +223,155 @@ public class CarController {
 
         Button addButton = new Button("Add Car");
 
-        prev.setOnAction(e -> {
-            layout.getChildren().removeAll(
-                    vinField, brandField, modelField, yearField, colorField,
-                    engineVolumeField, mileageField, transmissionBox,
-                    driveTypeBox, bodyTypeBox, priceField, fuelTypeBox,
-                    addButton, prev
-            );
-            carTable.setVisible(true); // Кестені қайтадан көрсету
+        // Layout the fields in a grid
+        formGrid.add(new Label("VIN:"), 0, 0);
+        formGrid.add(vinField, 1, 0);
+
+        formGrid.add(new Label("Brand:"), 0, 1);
+        formGrid.add(brandField, 1, 1);
+
+        formGrid.add(new Label("Model:"), 0, 2);
+        formGrid.add(modelField, 1, 2);
+
+        formGrid.add(new Label("Year:"), 0, 3);
+        formGrid.add(yearField, 1, 3);
+
+        formGrid.add(new Label("Color:"), 0, 4);
+        formGrid.add(colorField, 1, 4);
+
+        formGrid.add(new Label("Engine Volume:"), 2, 0);
+        formGrid.add(engineVolumeField, 3, 0);
+
+        formGrid.add(new Label("Mileage:"), 2, 1);
+        formGrid.add(mileageField, 3, 1);
+
+        formGrid.add(new Label("Transmission:"), 2, 2);
+        formGrid.add(transmissionBox, 3, 2);
+
+        formGrid.add(new Label("Drive Type:"), 2, 3);
+        formGrid.add(driveTypeBox, 3, 3);
+
+        formGrid.add(new Label("Body Type:"), 2, 4);
+        formGrid.add(bodyTypeBox, 3, 4);
+
+        formGrid.add(new Label("Price:"), 0, 5);
+        formGrid.add(priceField, 1, 5);
+
+        formGrid.add(new Label("Fuel Type:"), 2, 5);
+        formGrid.add(fuelTypeBox, 3, 5);
+
+        formContainer.getChildren().addAll(formGrid, addButton);
+
+        backButton.setOnAction(e -> {
+            layout.getChildren().remove(formContainer);
+            carTable.setVisible(true);
+            filterButton.setVisible(true);
+            addCar.setVisible(true);
+            if (!layout.getChildren().contains(car_name)) {
+                layout.getChildren().addAll(car_name, filterByBrand, minPriceField, maxPriceField, filterByPriceButton);
+            }
         });
-
-
 
         addButton.setOnAction(e -> {
             try {
                 Car car = new Car(
-                        Integer.parseInt(vinField.getText()),
-                        brandField.getText(),
-                        modelField.getText(),
-                        Integer.parseInt(yearField.getText()),
-                        colorField.getText(),
-                        Double.parseDouble(engineVolumeField.getText()),
-                        Integer.parseInt(mileageField.getText()),
+                        Integer.parseInt(vinField.getText().trim()),
+                        brandField.getText().trim(),
+                        modelField.getText().trim(),
+                        Integer.parseInt(yearField.getText().trim()),
+                        colorField.getText().trim(),
+                        Double.parseDouble(engineVolumeField.getText().trim()),
+                        Integer.parseInt(mileageField.getText().trim()),
                         transmissionBox.getValue().toString(),
                         driveTypeBox.getValue().toString(),
                         bodyTypeBox.getValue().toString(),
-                        Double.parseDouble(priceField.getText()),
-                        fuelTypeBox.getValue().toString());
-                ;
+                        Double.parseDouble(priceField.getText().trim()),
+                        fuelTypeBox.getValue().toString()
+                );
 
                 carService.addCar(car);
-                layout.getChildren().clear();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setHeaderText(null);
+                alert.setContentText("Car added successfully!");
+                alert.showAndWait();
+                layout.getChildren().remove(formContainer);
                 loadAllCars();
-                JOptionPane.showMessageDialog(null, "Car added successfully!");
-
+                carTable.setVisible(true);
+                filterButton.setVisible(true);
+                addCar.setVisible(true);
+//                if (!layout.getChildren().contains(car_name)) {
+//                    layout.getChildren().addAll(car_name, filterByBrand, minPriceField, maxPriceField, filterByPriceButton);
+//                }
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
             }
         });
 
-//      addCar басқаннан кейінгі шығатын полялар мен батырма
-        form.getChildren().addAll(
-                prev, vinField, brandField, modelField, yearField,
-                colorField, engineVolumeField, mileageField,
-                transmissionBox, driveTypeBox, bodyTypeBox,
-                priceField, fuelTypeBox, addButton
-        );
-
-        layout.getChildren().add(form);
+        layout.getChildren().add(formContainer);
     }
 
-//  show all cars in the table
+
     public void loadAllCars() {
         try {
             List<Car> cars = carService.getAllCars();
             carTable.getItems().setAll(cars);
         } catch (SQLException e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error loading cars: " + e.getMessage());
         }
     }
 
-//    filtering by price
     private void filterByPrice() {
         try {
-            double min = Double.parseDouble(minPriceField.getText());
-            double max = Double.parseDouble(maxPriceField.getText());
+            double min = Double.parseDouble(minPriceField.getText().trim());
+            double max = Double.parseDouble(maxPriceField.getText().trim());
+            if (min > max) {
+                JOptionPane.showMessageDialog(null, "Min price cannot be greater than max price.");
+                return;
+            }
             List<Car> filteredCars = carService.getCarsByPriceRange(min, max);
             carTable.getItems().setAll(filteredCars);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Please enter valid numeric values for price.");
         } catch (Exception e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error filtering by price: " + e.getMessage());
         }
+    }
+
+    public void showCarCardScene(Car car) {
+        VBox root = new VBox(10);
+        root.setPadding(new Insets(15));
+
+        root.getChildren().addAll(
+                new Label("VIN: " + car.getVin()),
+                new Label("Марка: " + car.getBrand()),
+                new Label("Модель: " + car.getModel()),
+                new Label("Жыл: " + car.getYear()),
+                new Label("Түсі: " + car.getColor()),
+                new Label("Қозғалтқыш көлемі: " + car.getEngineVolume() + " л"),
+                new Label("Жүрісі: " + car.getMileage() + " км"),
+                new Label("Қорап: " + car.getTransmission()),
+                new Label("Привод: " + car.getDriveType()),
+                new Label("Кузов: " + car.getBodyType()),
+                new Label("Бағасы: " + String.format("%,.0f ₸", car.getPrice())),
+                new Label("Отын түрі: " + car.getFuelType())
+        );
+
+        Button backButton = new Button("Артқа");
+        backButton.setOnAction(e -> showCarListScene());
+        root.getChildren().add(backButton);
+
+        Scene scene = new Scene(root, 400, 500);
+        mainStage.setTitle(car.getBrand() + " " + car.getModel());
+        mainStage.setScene(scene);
+    }
+
+    public void showCarListScene() {
+        Scene scene = new Scene(layout, 800, 600);
+        mainStage.setTitle("Көлік тізімі");
+        mainStage.setScene(scene);
     }
 }

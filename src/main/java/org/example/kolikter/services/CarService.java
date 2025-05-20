@@ -21,6 +21,11 @@ public class CarService implements IDAO {
     }
 
     @Override
+    public void buyCar(int vin) throws SQLException {
+        carDAO.buyCar(vin);
+    }
+
+    @Override
     public void addCar(Car car) throws SQLException {
         carDAO.addCar(car);
     }
