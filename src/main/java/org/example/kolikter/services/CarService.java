@@ -2,6 +2,7 @@ package org.example.kolikter.services;
 
 import org.example.kolikter.DAO.CarDAO;
 import org.example.kolikter.DAO.IDAO;
+import org.example.kolikter.controller.filter.CarFilter;
 import org.example.kolikter.model.Car;
 import java.sql.SQLException;
 import java.util.List;
@@ -15,10 +16,6 @@ public class CarService implements IDAO {
         return carDAO.getAllCars();
     }
 
-    @Override
-    public List<Car> getCarsByPriceRange(double minPrice, double maxPrice) throws SQLException {
-        return carDAO.getCarsByPriceRange(minPrice, maxPrice);
-    }
 
     @Override
     public void buyCar(int vin) throws SQLException {
@@ -40,9 +37,9 @@ public class CarService implements IDAO {
         carDAO.deleteCar(id);
     }
 
-    @Override
-    public List<Car> filterByBrand(String brand) throws SQLException {
-        return  carDAO.filterByBrand(brand);
+
+    public List<Car> filterCars(CarFilter filter) throws SQLException {
+        return carDAO.filterCars(filter);
     }
 
 }

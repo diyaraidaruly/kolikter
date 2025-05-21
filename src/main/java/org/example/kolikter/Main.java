@@ -23,7 +23,7 @@ public class Main extends Application {
         root.setCenter(loginInterface.login());
 
         Scene scene = new Scene(root, 800, 600);
-        primaryStage.setTitle("Көлік тізімі");
+        primaryStage.setTitle("Kolikter");
         primaryStage.setScene(scene);
         primaryStage.show();
 

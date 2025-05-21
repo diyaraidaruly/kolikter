@@ -1,6 +1,8 @@
 package org.example.kolikter.DAO;
 
+import org.example.kolikter.controller.filter.CarFilter;
 import org.example.kolikter.model.Car;
+import org.example.kolikter.model.User;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -52,7 +54,12 @@ public class CarDAO implements IDAO {
     @Override
     public List<Car> getAllCars() {
         List<Car> cars = new ArrayList<>();
+        // users can see only available cars
         String sql = "SELECT * FROM car WHERE Status = 'AVAILABLE'";
+        //admin can see all cars
+        if(User.isAdmin){
+            sql = "SELECT * FROM car";
+        }
         try (Connection conn = DBConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -81,17 +88,69 @@ public class CarDAO implements IDAO {
         }
     }
 
-    @Override
-    public List<Car> filterByBrand(String brand) {
+
+    public List<Car> filterCars(CarFilter filter) {
         List<Car> cars = new ArrayList<>();
-        String sql = "SELECT * FROM car WHERE brand = ?";
+        StringBuilder sql = new StringBuilder("SELECT * FROM car WHERE 1=1");
+        List<Object> parameters = new ArrayList<>();
+
+        if (filter.brand != null && !filter.brand.isEmpty()) {
+            sql.append(" AND brand = ?");
+            parameters.add(filter.brand);
+        }
+        if (filter.model != null && !filter.model.isEmpty()) {
+            sql.append(" AND model = ?");
+            parameters.add(filter.model);
+        }
+        if (filter.year != null) {
+            sql.append(" AND year = ?");
+            parameters.add(filter.year);
+        }
+        if (filter.color != null && !filter.color.isEmpty()) {
+            sql.append(" AND color = ?");
+            parameters.add(filter.color);
+        }
+        if (filter.engineVolume != null) {
+            sql.append(" AND engine_volume = ?");
+            parameters.add(filter.engineVolume);
+        }
+        if (filter.mileage != null) {
+            sql.append(" AND mileage <= ?");
+            parameters.add(filter.mileage);
+        }
+        if (filter.transmission != null && !filter.transmission.isEmpty()) {
+            sql.append(" AND transmission = ?");
+            parameters.add(filter.transmission);
+        }
+        if (filter.driveType != null && !filter.driveType.isEmpty()) {
+            sql.append(" AND drive_type = ?");
+            parameters.add(filter.driveType);
+        }
+        if (filter.bodyType != null && !filter.bodyType.isEmpty()) {
+            sql.append(" AND body_type = ?");
+            parameters.add(filter.bodyType);
+        }
+        if (filter.fuelType != null && !filter.fuelType.isEmpty()) {
+            sql.append(" AND fuel_type = ?");
+            parameters.add(filter.fuelType);
+        }
+        if (filter.minPrice != null) {
+            sql.append(" AND price >= ?");
+            parameters.add(filter.minPrice);
+        }
+        if (filter.maxPrice != null) {
+            sql.append(" AND price <= ?");
+            parameters.add(filter.maxPrice);
+        }
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
 
-            stmt.setString(1, brand);
+            for (int i = 0; i < parameters.size(); i++) {
+                stmt.setObject(i + 1, parameters.get(i));
+            }
+
             ResultSet rs = stmt.executeQuery();
-
             while (rs.next()) {
                 cars.add(extractCarFromResultSet(rs));
             }
@@ -103,24 +162,6 @@ public class CarDAO implements IDAO {
         return cars;
     }
 
-
-    @Override
-    public List<Car> getCarsByPriceRange(double minPrice, double maxPrice)  throws SQLException {
-        String sql = "SELECT * FROM car WHERE price BETWEEN ? AND ?";
-        List<Car> cars = new ArrayList<>();
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setDouble(1, minPrice);
-            stmt.setDouble(2, maxPrice);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    cars.add(extractCarFromResultSet(rs));
-                }
-            }
-        }
-        return cars;
-    }
 
     @Override
     public void buyCar(int vin) throws SQLException {

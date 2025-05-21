@@ -10,40 +10,42 @@ import javafx.scene.layout.VBox;
 import org.example.kolikter.model.User;
 import org.example.kolikter.services.UserService;
 
+import java.util.List;
 
 public class UserController {
     UserService userService = new UserService();
-    private final java.util.List<User> userList = userService.getUsers();
+    private final List<User> userList = userService.getUsers();
 
-    private TableView<User> usersTable = new TableView();
+    private final TableView<User> usersTable = new TableView<>();
 
     public Node getView() {
         VBox layout = new VBox();
         Button delete = new Button("delete");
 
-        // Бағандарды жасаймыз
-        TableColumn<User, String> nameCol = new TableColumn<>("Толық аты");
+        // Table columns
+        TableColumn<User, String> nameCol = new TableColumn<>("Full name");
         nameCol.setCellValueFactory(new PropertyValueFactory<>("full_name"));
 
-        TableColumn<User, Integer> ageCol = new TableColumn<>("Жасы");
+        TableColumn<User, Integer> ageCol = new TableColumn<>("Age");
         ageCol.setCellValueFactory(new PropertyValueFactory<>("age"));
 
-        TableColumn<User, String> cityCol = new TableColumn<>("Қала");
+        TableColumn<User, String> cityCol = new TableColumn<>("City");
         cityCol.setCellValueFactory(new PropertyValueFactory<>("city"));
 
-        TableColumn<User, String> phoneCol = new TableColumn<>("Телефон");
+        TableColumn<User, String> phoneCol = new TableColumn<>("Phone number:");
         phoneCol.setCellValueFactory(new PropertyValueFactory<>("phone_num"));
 
-        TableColumn<User, String> loginCol = new TableColumn<>("Логин");
+        TableColumn<User, String> loginCol = new TableColumn<>("Login");
         loginCol.setCellValueFactory(new PropertyValueFactory<>("login"));
 
-        TableColumn<User, String> passCol = new TableColumn<>("Пароль");
+        TableColumn<User, String> passCol = new TableColumn<>("Password");
         passCol.setCellValueFactory(new PropertyValueFactory<>("password"));
-
 
         usersTable.getColumns().addAll(nameCol, ageCol, cityCol, phoneCol, loginCol, passCol);
 
-        layout.getChildren().addAll(usersTable);
+        usersTable.getItems().setAll(userList);
+
+        layout.getChildren().addAll(usersTable, delete);
 
         delete.setOnAction(e -> deleteUser());
 
@@ -56,13 +58,14 @@ public class UserController {
         if (selectedUser != null) {
             try {
                 userService.deleteUser(selectedUser.getLogin());
+                usersTable.getItems().remove(selectedUser);
                 userList.remove(selectedUser);
             } catch (Exception ex) {
                 ex.printStackTrace();
-                showAlert("Error", "Қолданушыны өшіру кезінде қате.");
+                showAlert("Error", "Error during deleting user.");
             }
         } else {
-            showAlert("Info", "Алдымен қолданушыны таңдаңыз.");
+            showAlert("Info", "Select user to delete.");
         }
     }
 
