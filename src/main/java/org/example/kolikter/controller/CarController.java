@@ -23,9 +23,6 @@ public class CarController {
         private Button filterByPriceButton = new Button("Filter by Price");
 
         private TableView<Car> carTable = new TableView<>();
-        private TextField minPriceField = new TextField();
-        private TextField maxPriceField = new TextField();
-        private TextField car_name = new TextField();
         private Button filterButton = new Button("Filter");
         private Button addCar = new Button("Add Car");
 
@@ -46,11 +43,14 @@ public class CarController {
             addCar.setVisible(true);
         }
 
-        public void showCarListScene() {
-            Scene scene = new Scene(layout, 800, 600);
-            mainStage.setTitle("Cars list");
-            mainStage.setScene(scene);
-        }
+    public void showCarListScene() {
+        VBox newLayout = new VBox();
+        newLayout.getChildren().addAll(filterButton, addCar, carTable); // Копируем содержимое
+
+        Scene scene = new Scene(newLayout, 800, 600); // Создаем сцену с новым VBox
+        mainStage.setTitle("Cars list");
+        mainStage.setScene(scene);
+    }
 
         private void setupTable() {
             TableColumn<Car, String> brandCol = new TableColumn<>("Brand");
@@ -120,14 +120,8 @@ public class CarController {
             filterButton.setVisible(false);
             addCar.setVisible(false);
 
-            minPriceField.setPromptText("Min price");
-            maxPriceField.setPromptText("Max price");
-            car_name.setPromptText("Car name");
-
             filterButton.setOnAction(e -> {
-                if (!layout.getChildren().contains(car_name)) {
-                    layout.getChildren().addAll(car_name, filterByBrand, minPriceField, maxPriceField, filterByPriceButton);
-                }
+
                 FilterWindow.showFilterDialog(filter -> {
                     List<Car> results = null;
                     try {
@@ -143,8 +137,6 @@ public class CarController {
                 showAddCarForm();
                 carTable.setVisible(false);
                 filterButton.setVisible(false);
-                filterByBrand.setVisible(false);
-                filterByPriceButton.setVisible(false);
                 addCar.setVisible(false);
             });
 
