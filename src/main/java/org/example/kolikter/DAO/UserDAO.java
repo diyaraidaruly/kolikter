@@ -79,4 +79,14 @@ public class UserDAO {
             throw new RuntimeException(e);
         }
     }
+
+    public String getPasswordByUsername(String username) {
+        for (User user : getUsers()) {
+            if (user.getLogin().equalsIgnoreCase(username)) {
+                return user.getPassword();
+            }
+        }
+        return null;
+    }
+
 }
