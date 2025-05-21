@@ -68,7 +68,7 @@ public class UserDAO {
     }
 
     public void deleteUser(String user) {
-        String sql = "DELETE FROM users WHERE login = ?";
+        String sql = "DELETE FROM users WHERE username = ?";
         try(Connection conn = DBConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
 

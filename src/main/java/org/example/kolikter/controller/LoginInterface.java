@@ -4,6 +4,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -63,7 +64,7 @@ public class LoginInterface {
                 centerBox.getChildren().clear();
                 showCarsButton.setVisible(true);
                 centerBox.getChildren().add(showCarsButton);
-            } else if(userService.checkAdminLogin( password)) {
+            } else if (userService.checkAdminLogin(password)) {
                 User.isAdmin = true;
                 errorText.setText("");
                 passwordBox.setVisible(false);
@@ -72,7 +73,6 @@ public class LoginInterface {
                 users.setVisible(true);
                 centerBox.getChildren().add(showCarsButton);
                 centerBox.getChildren().add(users);
-
             } else {
                 errorText.setText("Қате логин немесе пароль!");
             }
@@ -80,16 +80,26 @@ public class LoginInterface {
 
         // Cars батырмасын басқанда көліктер тізімін көрсету
         showCarsButton.setOnAction(e -> {
+            VBox carTable = new VBox();
+            carTable.setAlignment(Pos.TOP_CENTER);
+            carTable.getChildren().addAll(users, carController.getView());
             centerBox.getChildren().clear();
-            centerBox.getChildren().add(carController.getView());
+            centerBox.getChildren().add(carTable);
             carController.showTableAndFilter();
             carController.loadAllCars();
             showCarsButton.setVisible(false);
+            users.setVisible(true);
+
         });
 
         users.setOnAction(e -> {
-            centerBox.getChildren().add(userController.getView());
+            VBox userTable = new VBox();
+            userTable.setAlignment(Pos.TOP_CENTER);
+            userTable.getChildren().addAll(showCarsButton,userController.getView());
+            centerBox.getChildren().clear();
+            centerBox.getChildren().add(userTable);
             users.setVisible(false);
+            showCarsButton.setVisible(true);
         });
 
         return centerBox;

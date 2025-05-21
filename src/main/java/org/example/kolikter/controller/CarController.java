@@ -21,7 +21,6 @@ public class CarController {
         private CarService carService = new CarService();
 
         private Button filterByPriceButton = new Button("Filter by Price");
-
         private TableView<Car> carTable = new TableView<>();
         private Button filterButton = new Button("Filter");
         private Button addCar = new Button("Add Car");
@@ -45,9 +44,9 @@ public class CarController {
 
     public void showCarListScene() {
         VBox newLayout = new VBox();
-        newLayout.getChildren().addAll(filterButton, addCar, carTable); // Копируем содержимое
+        newLayout.getChildren().addAll(filterButton, addCar, carTable);
 
-        Scene scene = new Scene(newLayout, 800, 600); // Создаем сцену с новым VBox
+        Scene scene = new Scene(newLayout, 800, 600);
         mainStage.setTitle("Cars list");
         mainStage.setScene(scene);
     }
@@ -142,11 +141,11 @@ public class CarController {
 
             layout.getChildren().addAll(filterButton, addCar, carTable);
 
-            // Екі рет басқанда көлік карточкасын көрсету
+            //басқанда көлік карточкасын көрсету
             carTable.setRowFactory(tv -> {
                 TableRow<Car> row = new TableRow<>();
                 row.setOnMouseClicked(event -> {
-                    if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                    if (event.getClickCount() == 1 && (!row.isEmpty())) {
                         Car rowData = row.getItem();
                         showCarCardScene(rowData);
                     }
