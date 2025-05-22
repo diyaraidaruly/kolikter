@@ -21,8 +21,10 @@ public class Main extends Application {
 
         BorderPane root = new BorderPane();
         root.setCenter(loginInterface.login());
+        root.getStyleClass().add("root");
 
         Scene scene = new Scene(root, 800, 600);
+        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         primaryStage.setTitle("Kolikter");
         primaryStage.setScene(scene);
         primaryStage.show();

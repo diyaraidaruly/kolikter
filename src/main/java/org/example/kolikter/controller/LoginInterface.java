@@ -61,11 +61,21 @@ public class LoginInterface {
         Text errorText = new Text();
         errorText.setFill(Color.RED);
 
+        // Title text
+        Text titleText = new Text("KOLIKTER.KZ");
+        titleText.getStyleClass().add("title-text");
+
         //interface for entering a password
-        VBox passwordBox = new VBox(loginField, passwordField, enterBtn,forgetPasswordButton, errorText);
+        VBox passwordBox = new VBox(titleText, loginField, passwordField, enterBtn, forgetPasswordButton, errorText);
         passwordBox.setAlignment(Pos.CENTER);
         passwordBox.setSpacing(15);
         passwordBox.setVisible(true);
+        passwordBox.getStyleClass().add("login-box");
+
+        loginField.getStyleClass().add("login-field");
+        passwordField.getStyleClass().add("login-field");
+        enterBtn.getStyleClass().add("login-button");
+        forgetPasswordButton.getStyleClass().add("login-button");
 
         // Cars and users are invisible at first
         Button showCarsButton = new Button("Cars");
