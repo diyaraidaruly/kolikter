@@ -8,7 +8,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import org.example.kolikter.services.ServerChat;
+import org.example.kolikter.Main;
+import org.example.kolikter.chat.ChatClient;
 import org.example.kolikter.services.UserService;
 import org.example.kolikter.model.User;
 
@@ -101,6 +102,9 @@ public class LoginInterface {
                 centerBox.getChildren().clear();
                 showCarsButton.setVisible(true);
                 centerBox.getChildren().add(showCarsButton);
+
+                // Пайдаланушы атын ChatClient-ке орнату
+                ChatClient.username = username;
             } else if (userService.checkAdminLogin(password)) {
                 User.isAdmin = true;
                 errorText.setText("");
@@ -117,31 +121,35 @@ public class LoginInterface {
 
         // Cars батырмасын басқанда көліктер тізімін көрсету
         showCarsButton.setOnAction(e -> {
-
             VBox carTable = new VBox();
             carTable.setAlignment(Pos.TOP_CENTER);
+
+            // ✅ Чат батырмасын қосу
             Button chatButton = new Button("Open Chat");
+
             if(User.isAdmin) {
-                carTable.getChildren().addAll(users, carController.getView(), chatButton);
-            }else{
+                carTable.getChildren().addAll(users, carController.getView());
+            } else {
                 carTable.getChildren().addAll(carController.getView(), chatButton);
             }
+
             centerBox.getChildren().clear();
             centerBox.getChildren().add(carTable);
             carController.showTableAndFilter();
             carController.loadAllCars();
             showCarsButton.setVisible(false);
             users.setVisible(true);
+
             chatButton.setOnAction(e2 -> {
                 try {
-
-                    ChatClient.main(null);
+                    if(!User.isAdmin){
+                        Main.openChatWindow("Admin"); // Жаңа чат терезесін ашу
+                        Main.openChatWindow(loginField.getText());
+                    }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             });
-
-
         });
 
         users.setOnAction(e -> {

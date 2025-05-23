@@ -1,16 +1,12 @@
 package org.example.kolikter;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.example.kolikter.controller.CarController;
+import org.example.kolikter.chat.ChatClient;
 import org.example.kolikter.controller.LoginInterface;
 
 public class Main extends Application {
@@ -29,7 +25,20 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
+        // Чат терезелерін параллель түрде ашу
+//        openChatWindow("Admin");
+//        openChatWindow("User");
+    }
 
+    public static void openChatWindow(String username) {
+        new Thread(() -> Platform.runLater(() -> {
+            try {
+                ChatClient.username = username;
+                new ChatClient().openChatWindow();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        })).start();
     }
 
     public static void main(String[] args) {

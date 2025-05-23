@@ -9,7 +9,7 @@ import java.net.Socket;
 public class Server {
 
     public static void main(String[] args) {
-        int port = 5000;
+        int port = 6000;
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Server started on port " + port);
 

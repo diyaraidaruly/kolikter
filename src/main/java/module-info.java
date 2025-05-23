@@ -13,4 +13,6 @@ module org.example.kolikter {
     opens org.example.kolikter.services to javafx.fxml;
     exports org.example.kolikter.controller;
     opens org.example.kolikter.controller to javafx.fxml;
+    exports org.example.kolikter.chat;
+    opens org.example.kolikter.chat to javafx.fxml;
 }

@@ -10,13 +10,13 @@ public class ServerChat {
     private static final Set<ClientHandler> clientHandlers = new HashSet<>();
 
     public static void main(String[] args) {
-        int port = 6000;
+        int port = 5000;
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Chat server started on port " + port);
 
             while (true) {
                 Socket socket = serverSocket.accept();
-                System.out.println("New client connected: " + socket.getInetAddress());
+                System.out.println(socket.getInetAddress() + " online");
                 ClientHandler handler = new ClientHandler(socket);
                 clientHandlers.add(handler);
                 new Thread(handler).start();
@@ -51,8 +51,8 @@ public class ServerChat {
 
                 out.println("Enter your name:");
                 name = in.readLine();
-                out.println("Welcome to the chat, " + name + "!");
-                broadcast(name + " has joined the chat.", this);
+                out.println("You joined the chat as " + name + ".");
+                broadcast(name + " is online", this);
 
                 String message;
                 while ((message = in.readLine()) != null) {
