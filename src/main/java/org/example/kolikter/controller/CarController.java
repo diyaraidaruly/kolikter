@@ -20,7 +20,6 @@ public class CarController {
 
         private CarService carService = new CarService();
 
-        private Button filterByPriceButton = new Button("Filter by Price");
         private TableView<Car> carTable = new TableView<>();
         private Button filterButton = new Button("Filter");
         private Button addCar = new Button("Add Car");
@@ -39,12 +38,21 @@ public class CarController {
         public void showTableAndFilter() {
             carTable.setVisible(true);
             filterButton.setVisible(true);
-            addCar.setVisible(true);
+            if (User.isAdmin){
+                addCar.setVisible(true);
+            }else {
+                addCar.setVisible(false);
+            }
         }
 
     public void showCarListScene() {
         VBox newLayout = new VBox();
-        newLayout.getChildren().addAll(filterButton, addCar, carTable);
+        if(User.isAdmin) {
+            newLayout.getChildren().addAll(filterButton, addCar, carTable);
+        }else{
+            newLayout.getChildren().addAll(filterButton, carTable);
+
+        }
 
         Scene scene = new Scene(newLayout, 800, 600);
         mainStage.setTitle("Cars list");

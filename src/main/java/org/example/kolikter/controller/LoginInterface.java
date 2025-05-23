@@ -8,15 +8,43 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import org.example.kolikter.Main;
+import org.example.kolikter.chat.ChatClient;
 import org.example.kolikter.services.UserService;
 import org.example.kolikter.model.User;
 
 import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 public class LoginInterface {
     public Node login() {
         CarController carController = new CarController();
         UserController userController = new UserController();
+
+        // Forget Password button
+        Button forgetPasswordButton = new Button("Forget Password");
+        forgetPasswordButton.setOnAction(e -> {
+            String username = JOptionPane.showInputDialog(null, "Enter your username:");
+            if (username != null && !username.trim().isEmpty()) {
+                try (Socket socket = new Socket("localhost", 5000);
+                     BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                     PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
+
+                    out.println(username);
+                    String response = in.readLine();
+                    JOptionPane.showMessageDialog(null, response);
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Server error: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Username cannot be empty.");
+            }
+        });
 
 
         // Пароль енгізу өрісі мен кіру батырмасы (алғашында жасырын)
@@ -34,11 +62,21 @@ public class LoginInterface {
         Text errorText = new Text();
         errorText.setFill(Color.RED);
 
+        // Title text
+        Text titleText = new Text("KOLIKTER.KZ");
+        titleText.getStyleClass().add("title-text");
+
         //interface for entering a password
-        VBox passwordBox = new VBox(loginField, passwordField, enterBtn, errorText);
+        VBox passwordBox = new VBox(titleText, loginField, passwordField, enterBtn, forgetPasswordButton, errorText);
         passwordBox.setAlignment(Pos.CENTER);
         passwordBox.setSpacing(15);
         passwordBox.setVisible(true);
+        passwordBox.getStyleClass().add("login-box");
+
+        loginField.getStyleClass().add("login-field");
+        passwordField.getStyleClass().add("login-field");
+        enterBtn.getStyleClass().add("login-button");
+        forgetPasswordButton.getStyleClass().add("login-button");
 
         // Cars and users are invisible at first
         Button showCarsButton = new Button("Cars");
@@ -64,6 +102,9 @@ public class LoginInterface {
                 centerBox.getChildren().clear();
                 showCarsButton.setVisible(true);
                 centerBox.getChildren().add(showCarsButton);
+
+                // Пайдаланушы атын ChatClient-ке орнату
+                ChatClient.username = username;
             } else if (userService.checkAdminLogin(password)) {
                 User.isAdmin = true;
                 errorText.setText("");
@@ -82,7 +123,16 @@ public class LoginInterface {
         showCarsButton.setOnAction(e -> {
             VBox carTable = new VBox();
             carTable.setAlignment(Pos.TOP_CENTER);
-            carTable.getChildren().addAll(users, carController.getView());
+
+            // ✅ Чат батырмасын қосу
+            Button chatButton = new Button("Open Chat");
+
+            if(User.isAdmin) {
+                carTable.getChildren().addAll(users, carController.getView());
+            } else {
+                carTable.getChildren().addAll(carController.getView(), chatButton);
+            }
+
             centerBox.getChildren().clear();
             centerBox.getChildren().add(carTable);
             carController.showTableAndFilter();
@@ -90,6 +140,16 @@ public class LoginInterface {
             showCarsButton.setVisible(false);
             users.setVisible(true);
 
+            chatButton.setOnAction(e2 -> {
+                try {
+                    if(!User.isAdmin){
+                        Main.openChatWindow("Admin"); // Жаңа чат терезесін ашу
+                        Main.openChatWindow(loginField.getText());
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
         });
 
         users.setOnAction(e -> {
