@@ -16,7 +16,7 @@ public class ServerChat {
 
             while (true) {
                 Socket socket = serverSocket.accept();
-                System.out.println(socket.getInetAddress() + " online");
+                System.out.println(socket.getInetAddress() + " is online");
                 ClientHandler handler = new ClientHandler(socket);
                 clientHandlers.add(handler);
                 new Thread(handler).start();
