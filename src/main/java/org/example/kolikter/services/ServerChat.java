@@ -51,7 +51,6 @@ public class ServerChat {
 
                 out.println("Enter your name:");
                 name = in.readLine();
-                out.println("You joined the chat as " + name + ".");
                 broadcast(name + " is online", this);
 
                 String message;

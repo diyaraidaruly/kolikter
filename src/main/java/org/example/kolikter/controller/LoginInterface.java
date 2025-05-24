@@ -46,7 +46,7 @@ public class LoginInterface {
         });
 
         // Registration button
-        Button registerButton = new Button("Тіркелу");
+        Button registerButton = new Button("Sign up");
         registerButton.getStyleClass().add("login-button");
 
         // Login fields
@@ -55,10 +55,10 @@ public class LoginInterface {
         loginField.setMaxSize(150, 25);
 
         TextField passwordField = new TextField();
-        passwordField.setPromptText("Парольді енгізіңіз");
+        passwordField.setPromptText("Enter password");
         passwordField.setMaxSize(150, 25);
 
-        Button enterBtn = new Button("Кіру");
+        Button enterBtn = new Button("Sign in");
         Text errorText = new Text();
         errorText.setFill(Color.RED);
 
@@ -106,13 +106,16 @@ public class LoginInterface {
         regConfirmPasswordField.setPromptText("confirm password");
         regConfirmPasswordField.setMaxSize(150, 25);
 
-        Button submitRegButton = new Button("Тіркелу");
+        Button submitRegButton = new Button("Sign up");
         Text regErrorText = new Text();
         regErrorText.setFill(Color.RED);
 
+        Button regBackButton = new Button("Back");
+
+
         // Registration interface
-        VBox registrationBox = new VBox(titleText, regFullNameField, regAgeField, regCityField, 
-            regPhoneField, regLoginField, regPasswordField, submitRegButton, regErrorText);
+        VBox registrationBox = new VBox(titleText, regBackButton, regFullNameField, regAgeField, regCityField,
+            regPhoneField, regLoginField, regPasswordField, regConfirmPasswordField, submitRegButton, regErrorText);
         registrationBox.setAlignment(Pos.CENTER);
         registrationBox.setSpacing(15);
         registrationBox.setVisible(false);
@@ -125,6 +128,7 @@ public class LoginInterface {
         regPhoneField.getStyleClass().add("login-field");
         regLoginField.getStyleClass().add("login-field");
         regPasswordField.getStyleClass().add("login-field");
+        regConfirmPasswordField.getStyleClass().add("login-field");
         submitRegButton.getStyleClass().add("login-button");
 
         // Cars and users buttons
@@ -134,14 +138,27 @@ public class LoginInterface {
         Button users = new Button("Users");
         users.setVisible(false);
 
-        VBox centerBox = new VBox(loginBox, registrationBox);
+        VBox centerBox = new VBox(loginBox);
+        centerBox.setAlignment(Pos.CENTER);
+        centerBox.setSpacing(10);
+
+        VBox centerBox2 = new VBox(registrationBox);
         centerBox.setAlignment(Pos.CENTER);
         centerBox.setSpacing(10);
 
         // Registration button action
         registerButton.setOnAction(e -> {
+            centerBox.getChildren().clear();
+            centerBox.getChildren().add(centerBox2);
             loginBox.setVisible(false);
             registrationBox.setVisible(true);
+        });
+
+        regBackButton.setOnAction(e -> {
+            centerBox.getChildren().clear();
+            centerBox.getChildren().add(loginBox);
+            registrationBox.setVisible(false);
+            loginBox.setVisible(true);
         });
 
         // Submit registration action
@@ -164,7 +181,20 @@ public class LoginInterface {
                     regErrorText.setText("");
                     registrationBox.setVisible(false);
                     loginBox.setVisible(true);
-                    JOptionPane.showMessageDialog(null, "Registration successful!");
+                    Alert.AlertType alertType = Alert.AlertType.INFORMATION;
+                    Alert alert = new Alert(alertType, "User registered successfully!");
+                    alert.showAndWait();
+                    regFullNameField.clear();
+                    regAgeField.clear();
+                    regCityField.clear();
+                    regPhoneField.clear();
+                    regLoginField.clear();
+                    regPasswordField.clear();
+                    regConfirmPasswordField.clear();
+                    regErrorText.setText("");
+                    regFullNameField.requestFocus();
+
+
                 } else {
                     regErrorText.setText("Error!");
                 }
