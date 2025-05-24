@@ -2,8 +2,7 @@ package org.example.kolikter.controller;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -46,18 +45,19 @@ public class LoginInterface {
             }
         });
 
+        // Registration button
+        Button registerButton = new Button("Тіркелу");
+        registerButton.getStyleClass().add("login-button");
 
-        // Пароль енгізу өрісі мен кіру батырмасы (алғашында жасырын)
+        // Login fields
+        TextField loginField = new TextField();
+        loginField.setPromptText("Login");
+        loginField.setMaxSize(150, 25);
+
         TextField passwordField = new TextField();
         passwordField.setPromptText("Парольді енгізіңіз");
-        passwordField.setMaxSize(150,25);
+        passwordField.setMaxSize(150, 25);
 
-        //field for login
-        TextField loginField = new TextField();
-        loginField.setPromptText("Login ");
-        loginField.setMaxSize(150,25);
-
-        //Button for logging in after entering the password
         Button enterBtn = new Button("Кіру");
         Text errorText = new Text();
         errorText.setFill(Color.RED);
@@ -66,31 +66,117 @@ public class LoginInterface {
         Text titleText = new Text("KOLIKTER.KZ");
         titleText.getStyleClass().add("title-text");
 
-        //interface for entering a password
-        VBox passwordBox = new VBox(titleText, loginField, passwordField, enterBtn, forgetPasswordButton, errorText);
-        passwordBox.setAlignment(Pos.CENTER);
-        passwordBox.setSpacing(15);
-        passwordBox.setVisible(true);
-        passwordBox.getStyleClass().add("login-box");
+        // Login interface
+        VBox loginBox = new VBox(titleText, loginField, passwordField, enterBtn, registerButton, forgetPasswordButton, errorText);
+        loginBox.setAlignment(Pos.CENTER);
+        loginBox.setSpacing(15);
+        loginBox.setVisible(true);
+        loginBox.getStyleClass().add("login-box");
 
         loginField.getStyleClass().add("login-field");
         passwordField.getStyleClass().add("login-field");
         enterBtn.getStyleClass().add("login-button");
-        forgetPasswordButton.getStyleClass().add("login-button");
 
-        // Cars and users are invisible at first
+        // Registration form fields
+        TextField regFullNameField = new TextField();
+        regFullNameField.setPromptText("name");
+        regFullNameField.setMaxSize(150, 25);
+
+        TextField regAgeField = new TextField();
+        regAgeField.setPromptText("age");
+        regAgeField.setMaxSize(150, 25);
+
+        TextField regCityField = new TextField();
+        regCityField.setPromptText("city");
+        regCityField.setMaxSize(150, 25);
+
+        TextField regPhoneField = new TextField();
+        regPhoneField.setPromptText("Phone number");
+        regPhoneField.setMaxSize(150, 25);
+
+        TextField regLoginField = new TextField();
+        regLoginField.setPromptText("username");
+        regLoginField.setMaxSize(150, 25);
+
+        TextField regPasswordField = new TextField();
+        regPasswordField.setPromptText("password");
+        regPasswordField.setMaxSize(150, 25);
+
+        TextField regConfirmPasswordField = new TextField();
+        regConfirmPasswordField.setPromptText("confirm password");
+        regConfirmPasswordField.setMaxSize(150, 25);
+
+        Button submitRegButton = new Button("Тіркелу");
+        Text regErrorText = new Text();
+        regErrorText.setFill(Color.RED);
+
+        // Registration interface
+        VBox registrationBox = new VBox(titleText, regFullNameField, regAgeField, regCityField, 
+            regPhoneField, regLoginField, regPasswordField, submitRegButton, regErrorText);
+        registrationBox.setAlignment(Pos.CENTER);
+        registrationBox.setSpacing(15);
+        registrationBox.setVisible(false);
+        registrationBox.getStyleClass().add("login-box");
+
+        // Style registration fields
+        regFullNameField.getStyleClass().add("login-field");
+        regAgeField.getStyleClass().add("login-field");
+        regCityField.getStyleClass().add("login-field");
+        regPhoneField.getStyleClass().add("login-field");
+        regLoginField.getStyleClass().add("login-field");
+        regPasswordField.getStyleClass().add("login-field");
+        submitRegButton.getStyleClass().add("login-button");
+
+        // Cars and users buttons
         Button showCarsButton = new Button("Cars");
         showCarsButton.setVisible(false);
 
         Button users = new Button("Users");
         users.setVisible(false);
 
-        VBox centerBox = new VBox(passwordBox);
+        VBox centerBox = new VBox(loginBox, registrationBox);
         centerBox.setAlignment(Pos.CENTER);
         centerBox.setSpacing(10);
 
+        // Registration button action
+        registerButton.setOnAction(e -> {
+            loginBox.setVisible(false);
+            registrationBox.setVisible(true);
+        });
 
-        // Парольді тексеріп кіру батырмасын басқанда
+        // Submit registration action
+        submitRegButton.setOnAction(e -> {
+            try {
+                User newUser = new User();
+                newUser.setFull_name(regFullNameField.getText());
+                newUser.setAge(Integer.parseInt(regAgeField.getText()));
+                newUser.setCity(regCityField.getText());
+                newUser.setPhone_num(regPhoneField.getText());
+                newUser.setLogin(regLoginField.getText());
+                if(regPasswordField.getText().equals(regConfirmPasswordField.getText())){
+                    newUser.setPassword(regPasswordField.getText());
+                } else {
+                    regErrorText.setText("Passwords don`t match!");
+                }
+
+                UserService userService = new UserService();
+                if (userService.registerUser(newUser)) {
+                    regErrorText.setText("");
+                    registrationBox.setVisible(false);
+                    loginBox.setVisible(true);
+                    JOptionPane.showMessageDialog(null, "Registration successful!");
+                } else {
+                    regErrorText.setText("Error!");
+                }
+            } catch (NumberFormatException ex) {
+                regErrorText.setText("Enter correct age!");
+            } catch (Exception ex) {
+                regErrorText.setText("Error!");
+                ex.printStackTrace();
+            }
+        });
+
+        // Login button action
         enterBtn.setOnAction(e -> {
             String username = loginField.getText();
             String password = passwordField.getText();
@@ -98,33 +184,31 @@ public class LoginInterface {
             UserService userService = new UserService();
             if (userService.checkUserLogin(username, password)) {
                 errorText.setText("");
-                passwordBox.setVisible(false);
+                loginBox.setVisible(false);
                 centerBox.getChildren().clear();
                 showCarsButton.setVisible(true);
                 centerBox.getChildren().add(showCarsButton);
 
-                // Пайдаланушы атын ChatClient-ке орнату
                 ChatClient.username = username;
             } else if (userService.checkAdminLogin(password)) {
                 User.isAdmin = true;
                 errorText.setText("");
-                passwordBox.setVisible(false);
+                loginBox.setVisible(false);
                 centerBox.getChildren().clear();
                 showCarsButton.setVisible(true);
                 users.setVisible(true);
                 centerBox.getChildren().add(showCarsButton);
                 centerBox.getChildren().add(users);
             } else {
-                errorText.setText("Қате логин немесе пароль!");
+                errorText.setText("Username or password is incorrect!");
             }
         });
 
-        // Cars батырмасын басқанда көліктер тізімін көрсету
+        // Cars button action
         showCarsButton.setOnAction(e -> {
             VBox carTable = new VBox();
             carTable.setAlignment(Pos.TOP_CENTER);
 
-            // ✅ Чат батырмасын қосу
             Button chatButton = new Button("Open Chat");
 
             if(User.isAdmin) {
@@ -143,7 +227,7 @@ public class LoginInterface {
             chatButton.setOnAction(e2 -> {
                 try {
                     if(!User.isAdmin){
-                        Main.openChatWindow("Admin"); // Жаңа чат терезесін ашу
+                        Main.openChatWindow("Admin");
                         Main.openChatWindow(loginField.getText());
                     }
                 } catch (Exception ex) {
@@ -152,18 +236,17 @@ public class LoginInterface {
             });
         });
 
+        // Users button action
         users.setOnAction(e -> {
             VBox userTable = new VBox();
             userTable.setAlignment(Pos.TOP_CENTER);
-            userTable.getChildren().addAll(showCarsButton,userController.getView());
+            userTable.getChildren().addAll(showCarsButton, userController.getView());
             centerBox.getChildren().clear();
             centerBox.getChildren().add(userTable);
             users.setVisible(false);
             showCarsButton.setVisible(true);
         });
 
-
         return centerBox;
     }
-
 }

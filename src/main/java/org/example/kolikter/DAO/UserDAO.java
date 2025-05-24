@@ -89,4 +89,22 @@ public class UserDAO {
         return null;
     }
 
+    public boolean registerUser(User user) {
+        String sql = "INSERT INTO users (full_name, age, city, phone_num, username, password, role) VALUES (?, ?, ?, ?, ?, ?, 'CUSTOMER')";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, user.getFull_name());
+            stmt.setInt(2, user.getAge());
+            stmt.setString(3, user.getCity());
+            stmt.setString(4, user.getPhone_num());
+            stmt.setString(5, user.getLogin());
+            stmt.setString(6, user.getPassword());
+            
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
