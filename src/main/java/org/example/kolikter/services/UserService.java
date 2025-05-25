@@ -25,4 +25,8 @@ public class UserService extends UserDAO {
     public void deleteUser(String user) {
         userDAO.deleteUser(user);
     }
+
+    public boolean registerUser(User user) {
+        return userDAO.registerUser(user);
+    }
 }

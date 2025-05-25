@@ -111,7 +111,7 @@ public class CarDAO implements IDAO {
             parameters.add(filter.color);
         }
         if (filter.engineVolume != null) {
-            sql.append(" AND engine_volume = ?");
+            sql.append(" AND engineVolume = ?");
             parameters.add(filter.engineVolume);
         }
         if (filter.mileage != null) {

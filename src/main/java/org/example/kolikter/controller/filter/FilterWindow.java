@@ -5,14 +5,14 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.example.kolikter.model.BodyType;
+import org.example.kolikter.model.DriveType;
+import org.example.kolikter.model.FuelType;
+import org.example.kolikter.model.TransmissionType;
 
 import java.util.function.Consumer;
 
-// Мысал enum-дар, сен өзіңе қажеттілерін өзгерте аласың
-enum TransmissionType { MANUAL, AUTOMATIC, CVT }
-enum DriveType { FWD, RWD, AWD }
-enum BodyType { SEDAN, SUV, HATCHBACK }
-enum FuelType { GASOLINE, DIESEL, ELECTRIC }
+
 
 public class FilterWindow {
 
@@ -93,7 +93,10 @@ public class FilterWindow {
             stage.close();
         });
 
-        cancelBtn.setOnAction(e -> stage.close());
+        cancelBtn   .setOnAction(e -> {
+
+            stage.close();
+        });
 
         clearBtn.setOnAction(e -> {
             brandField.clear();
