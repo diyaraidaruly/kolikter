@@ -3,6 +3,8 @@ package org.example.kolikter.controller;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -67,7 +69,7 @@ public class LoginInterface {
         titleText.getStyleClass().add("title-text");
 
         // Login interface
-        VBox loginBox = new VBox(titleText, loginField, passwordField, enterBtn, registerButton, forgetPasswordButton, errorText);
+        VBox loginBox = new VBox( titleText, loginField, passwordField, enterBtn, registerButton, forgetPasswordButton, errorText);
         loginBox.setAlignment(Pos.CENTER);
         loginBox.setSpacing(15);
         loginBox.setVisible(true);
@@ -235,36 +237,41 @@ public class LoginInterface {
         });
 
         // Cars button action
+//        public void onShowCarsButton(){
+//            VBox carTable = new VBox();
+//            carTable.setAlignment(Pos.TOP_CENTER);
+//
+//            Button chatButton = new Button("Open Chat");
+//
+//            if(User.isAdmin) {
+//                carTable.getChildren().addAll(users, carController.getView());
+//            } else {
+//                carTable.getChildren().addAll(carController.getView(), chatButton);
+//            }
+//
+//            centerBox.getChildren().clear();
+//            centerBox.getChildren().add(carTable);
+//            carController.showTableAndFilter();
+//            carController.loadAllCars();
+//            showCarsButton.setVisible(false);
+//            users.setVisible(true);
+//
+//            chatButton.setOnAction(e2 -> {
+//                try {
+//                    if(!User.isAdmin){
+//                        Main.openChatWindow("Admin");
+//                        Main.openChatWindow(loginField.getText());
+//                    }
+//                } catch (Exception ex) {
+//                    ex.printStackTrace();
+//                }
+//            });
+//        }
+
         showCarsButton.setOnAction(e -> {
-            VBox carTable = new VBox();
-            carTable.setAlignment(Pos.TOP_CENTER);
-
-            Button chatButton = new Button("Open Chat");
-
-            if(User.isAdmin) {
-                carTable.getChildren().addAll(users, carController.getView());
-            } else {
-                carTable.getChildren().addAll(carController.getView(), chatButton);
-            }
-
-            centerBox.getChildren().clear();
-            centerBox.getChildren().add(carTable);
-            carController.showTableAndFilter();
-            carController.loadAllCars();
-            showCarsButton.setVisible(false);
-            users.setVisible(true);
-
-            chatButton.setOnAction(e2 -> {
-                try {
-                    if(!User.isAdmin){
-                        Main.openChatWindow("Admin");
-                        Main.openChatWindow(loginField.getText());
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            });
+            onShowCarsButton(centerBox, carController, users, showCarsButton, loginField);
         });
+
 
         // Users button action
         users.setOnAction(e -> {
@@ -279,4 +286,35 @@ public class LoginInterface {
 
         return centerBox;
     }
+    private void onShowCarsButton(VBox centerBox, CarController carController, Button users, Button showCarsButton, TextField loginField) {
+        VBox carTable = new VBox();
+        carTable.setAlignment(Pos.TOP_CENTER);
+
+        Button chatButton = new Button("Open Chat");
+
+        if(User.isAdmin) {
+            carTable.getChildren().addAll(users, carController.getView());
+        } else {
+            carTable.getChildren().addAll(carController.getView(), chatButton);
+        }
+
+        centerBox.getChildren().clear();
+        centerBox.getChildren().add(carTable);
+        carController.showTableAndFilter();
+        carController.loadAllCars();
+        showCarsButton.setVisible(false);
+        users.setVisible(true);
+
+        chatButton.setOnAction(e2 -> {
+            try {
+                if(!User.isAdmin){
+                    Main.openChatWindow("Admin");
+                    Main.openChatWindow(loginField.getText());
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+    }
+
 }

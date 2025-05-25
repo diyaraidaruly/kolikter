@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.example.kolikter.chat.ChatClient;
@@ -13,6 +14,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/org/example/kolikter/car_5858563.png")));
+
         LoginInterface loginInterface = new LoginInterface();
 
         BorderPane root = new BorderPane();

@@ -118,6 +118,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.io.*;
 import java.net.Socket;
@@ -135,15 +137,31 @@ public class ChatClient implements Runnable {
     public void openChatWindow() {
         Stage chatStage = new Stage();
 
+        chatStage.getIcons().add(new Image(getClass().getResourceAsStream("/org/example/kolikter/comments_531318.png")));
+
+        Image icon = new Image(getClass().getResourceAsStream("/org/example/kolikter/send_14359825.png"));
+        ImageView imageView = new ImageView(icon);
+
+        // Суреттің өлшемдерін орнату (қажет болса)
+        imageView.setFitWidth(20);  // Ені
+        imageView.setFitHeight(20);
+
         VBox root = new VBox(10);
+        root.getStyleClass().add("vbox");
         root.setSpacing(10);
 
         TextArea chatArea = new TextArea();
+        chatArea.getStyleClass().add("text-area");
         chatArea.setEditable(false);
+        chatArea.setPrefWidth(100);
 
         TextField inputField = new TextField();
+        inputField.getStyleClass().add("text-field");
         inputField.setPromptText("Enter");
-        Button sendButton = new Button("Send");
+
+        Button sendButton = new Button("",imageView);
+        sendButton.getStyleClass().add("button");
+
 
         root.getChildren().addAll(chatArea, inputField, sendButton);
 
@@ -163,6 +181,7 @@ public class ChatClient implements Runnable {
         });
 
         Scene scene = new Scene(root, 400, 300);
+        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         chatStage.setScene(scene);
         chatStage.setTitle("СHAT  " + username);
         chatStage.show();
